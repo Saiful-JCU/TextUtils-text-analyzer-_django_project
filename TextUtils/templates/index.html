@@ -8,8 +8,14 @@
 
 <body>
     <h1>Welcome to the text analyzer. Enter your text below.</h1>
-    <form action='/removepunc' method='get'>
-        <textarea style='width: 758px; height: 148px;'></textarea>
+    <form action='/analyze' method='get'>
+        <textarea name='text' style='width: 758px; height: 148px;'></textarea> <br>
+        <input type="checkbox" name='removepunc'> Remove punctuaton <br>
+        <input type="checkbox" name='removespace'> Remove Extra space <br>
+        <input type="checkbox" name='wordcount'> Count Word <br>
+        <input type="checkbox" name='charcount'> Character count <br>
+        <input type="checkbox" name='vowelcount'> Vowel Count <br>
+        <input type="checkbox" name='capfirst'> Capitailze First <br>
         <button type="submit">Analyze Text</button>
     </form>
 

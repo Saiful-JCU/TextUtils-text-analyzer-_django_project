@@ -2,25 +2,72 @@
 
 from django.http import HttpResponse
 from django.shortcuts import render
+import re # for capitalyze function
 
 def index(request):
 
     return render(request, 'index.html')
 
-def remove_punc(request):
+def analyze(request):
+    # Get the text
+    djtext = request.GET.get('text', 'default')
+    capfirst = request.GET.get('capfirst','off')
+    removespace = request.GET.get('removespace','off')
+    wordcount = request.GET.get('wordcount','off')
+    vowelcount = request.GET.get('vowelcount','off')
+    charcount = request.GET.get('charcount','off')
+    removepunc=request.GET.get('removepunc','off')
+    
+    if removepunc == "on":
+        punctuations = '''!()-[]{};:'"\,<>./?@#$%^&*_~'''
+        analyzed = ""
+        for char in djtext:
+            if char not in punctuations:
+                analyzed = analyzed + char
+        params = {'purpose': 'Removed Punctuations', 'analyzed_text': analyzed}
+        return render(request, 'analyze.html', params)
+    
+    elif charcount == 'on':
+        count = 0
+        characters = 'abcdefghijklmnopqrstuvwxyzABCDEGHIJKLMNOPQRSTUVWXYZ' 
+        for char in djtext:
+            if char in characters:  # Check if the character is a vowel
+                count += 1
 
-    return HttpResponse("<h1> removepunc </h1>")
-def newline_remove(request):
+        text = f'Your text has {count} charecters.'
+        params = {'purpose': 'Count Charecters', 'analyzed_text': text}
+        return render(request, 'analyze.html', params)
 
-    return HttpResponse("<h1> New line remover Page </h1>")
-def cap_first(request):
+    elif vowelcount == 'on':
+        count = 0
+        vowels = 'aeiouAEIOU'
+        for vowel in djtext:
+            if vowel in vowels:
+                count += 1
+        text = f'Your text has {count} vowels.'
+        params = {'purpose': 'Count Vowels', 'analyzed_text': text}
+        return render(request, 'analyze.html', params)
+    
+    elif wordcount == 'on':
+        words = djtext.split()
+        count = len(words)
+        text = f'Your text has {count} words.'
+        params = {'purpose': 'Count Words', 'analyzed_text': text}
+        return render(request, 'analyze.html', params)
 
-    return HttpResponse("<h1> Capitalize first wor. </h1>")
+    elif removespace == 'on':
+        ls = djtext.split()
+        sentence  = ' '.join(ls)
+        params = {'purpose': 'Remove Extra Space', 'analyzed_text': sentence}
+        return render(request, 'analyze.html', params)
+    
+    elif capfirst == 'on':
+        sentence = re.split('(?<=[.!?]) + ', djtext)
+        sentence = [s.capitalize() for s in sentence]
+        final_text = ' '.join(sentence)
+        params = {'purpose': 'Capitalize First Characters of word', 'analyzed_text': final_text}
+        return render(request, 'analyze.html', params)
+    else:
+        return HttpResponse('Error')
 
-def space_remove(request):
-
-    return HttpResponse("<h1> Extra Space remover page. </h1>")
-
-def char_count(request):
-
-    return HttpResponse("<h1> Character count Page. </h1>")
+    
