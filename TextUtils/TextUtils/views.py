@@ -11,7 +11,7 @@ def index(request):
 def analyze(request):
     # Get the text
     djtext = request.GET.get('text', 'default')
-    capfirst = request.GET.get('capfirst','off')
+    fullcap = request.GET.get('fullcap','off')
     removespace = request.GET.get('removespace','off')
     wordcount = request.GET.get('wordcount','off')
     vowelcount = request.GET.get('vowelcount','off')
@@ -61,11 +61,12 @@ def analyze(request):
         params = {'purpose': 'Remove Extra Space', 'analyzed_text': sentence}
         return render(request, 'analyze.html', params)
     
-    elif capfirst == 'on':
-        sentence = re.split('(?<=[.!?]) + ', djtext)
-        sentence = [s.capitalize() for s in sentence]
-        final_text = ' '.join(sentence)
-        params = {'purpose': 'Capitalize First Characters of word', 'analyzed_text': final_text}
+    elif fullcap == 'on':
+        analyzed = ""       
+        for char in djtext:
+            analyzed = analyzed + char.upper()
+
+        params = {'purpose': 'Capitalize First Characters of word', 'analyzed_text': analyzed}
         return render(request, 'analyze.html', params)
     else:
         return HttpResponse('Error')
