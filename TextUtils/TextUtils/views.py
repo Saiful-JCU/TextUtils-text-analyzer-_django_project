@@ -8,6 +8,10 @@ def index(request):
 
     return render(request, 'index.html')
 
+def index2(request):
+
+    return render(request, 'index2.html')
+
 def analyze(request):
     # Get the text
     djtext = request.GET.get('text', 'default')
@@ -26,6 +30,7 @@ def analyze(request):
                 analyzed = analyzed + char
         params = {'purpose': 'Removed Punctuations', 'analyzed_text': analyzed}
         return render(request, 'analyze.html', params)
+        
     
     elif charcount == 'on':
         count = 0
@@ -70,5 +75,7 @@ def analyze(request):
         return render(request, 'analyze.html', params)
     else:
         return HttpResponse('Error')
+
+    
 
     
