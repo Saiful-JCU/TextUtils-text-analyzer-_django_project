@@ -8,20 +8,20 @@ def index(request):
 
     return render(request, 'index.html')
 
-def index2(request):
-
-    return render(request, 'index2.html')
-
 def analyze(request):
     # Get the text
-    djtext = request.GET.get('text', 'default')
-    fullcap = request.GET.get('fullcap','off')
-    removespace = request.GET.get('removespace','off')
-    wordcount = request.GET.get('wordcount','off')
-    vowelcount = request.GET.get('vowelcount','off')
-    charcount = request.GET.get('charcount','off')
-    removepunc=request.GET.get('removepunc','off')
+    djtext = request.POST.get('text', 'default')
+
+    # CHECK CHECKBOX VALUES
+    fullcap = request.POST.get('fullcap','off')
+    removespace = request.POST.get('removespace','off')
+    wordcount = request.POST.get('wordcount','off')
+    vowelcount = request.POST.get('vowelcount','off')
+    charcount = request.POST.get('charcount','off')
+    removepunc=request.POST.get('removepunc','off')
+    removenumber = request.POST.get('removenum', 'off')
     
+    # CHECK WHICH CHECKBOX IS ON
     if removepunc == "on":
         punctuations = '''!()-[]{};:'"\,<>./?@#$%^&*_~'''
         analyzed = ""
@@ -29,10 +29,9 @@ def analyze(request):
             if char not in punctuations:
                 analyzed = analyzed + char
         params = {'purpose': 'Removed Punctuations', 'analyzed_text': analyzed}
-        return render(request, 'analyze.html', params)
+        djtext = analyzed
         
-    
-    elif charcount == 'on':
+    if charcount == 'on':
         count = 0
         characters = 'abcdefghijklmnopqrstuvwxyzABCDEGHIJKLMNOPQRSTUVWXYZ' 
         for char in djtext:
@@ -41,9 +40,9 @@ def analyze(request):
 
         text = f'Your text has {count} charecters.'
         params = {'purpose': 'Count Charecters', 'analyzed_text': text}
-        return render(request, 'analyze.html', params)
+        
 
-    elif vowelcount == 'on':
+    if vowelcount == 'on':
         count = 0
         vowels = 'aeiouAEIOU'
         for vowel in djtext:
@@ -53,28 +52,42 @@ def analyze(request):
         params = {'purpose': 'Count Vowels', 'analyzed_text': text}
         return render(request, 'analyze.html', params)
     
-    elif wordcount == 'on':
+    if wordcount == 'on':
         words = djtext.split()
         count = len(words)
         text = f'Your text has {count} words.'
         params = {'purpose': 'Count Words', 'analyzed_text': text}
         return render(request, 'analyze.html', params)
 
-    elif removespace == 'on':
+    if removespace == 'on':
         ls = djtext.split()
         sentence  = ' '.join(ls)
         params = {'purpose': 'Remove Extra Space', 'analyzed_text': sentence}
-        return render(request, 'analyze.html', params)
+        djtext = sentence
     
-    elif fullcap == 'on':
+    if fullcap == 'on':
         analyzed = ""       
         for char in djtext:
             analyzed = analyzed + char.upper()
 
-        params = {'purpose': 'Capitalize First Characters of word', 'analyzed_text': analyzed}
-        return render(request, 'analyze.html', params)
-    else:
-        return HttpResponse('Error')
+        params = {'purpose': 'Capitalize All Characters of text', 'analyzed_text': analyzed}
+        djtext = analyzed
+
+    if removenumber == 'on':
+        analyzed = ""
+        numbers = '0123456789'
+
+        for char in djtext:
+            if char not in numbers:
+                analyzed = analyzed + char
+        params = {'purpose': 'Removed Numbers ', 'analyzed_text': analyzed}
+        djtext = analyzed
+          
+    if (removepunc != 'on' and removenumber != 'on' and removespace !='on' and fullcap != 'on' and wordcount != 'on' and charcount != 'on' and wordcount != 'on' and vowelcount != 'on'):
+        return HttpResponse("Please select any operation and try again!")
+
+    return render(request, 'analyze.html', params)
+    
 
     
 
